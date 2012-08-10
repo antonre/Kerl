@@ -67,6 +67,7 @@ class Kerl {
             if ($filesParam[$basename]) {
                 if ($filesParam[$basename]['fileInfo']['mtime'] != filemtime($val) || $filesParam[$basename]['outputFile'] !==  $newFileName) {
                     $tmp = system("lessc $val > $newFileName $compress", $status);
+                    touch($newFileName, time() + 1, time() + 1);
 
                     if (!empty($tmp) || $status != 1) {
                         echo $tmp."\n";
@@ -77,6 +78,7 @@ class Kerl {
                 }
             } else {
                 $tmp = system("lessc $val > $newFileName $compress", $status);
+                touch($newFileName, time() + 1, time() + 1);
 
                 if (!empty($tmp) || $status != 1) {
                     echo $tmp."\n";
@@ -339,6 +341,12 @@ class Kerl {
                         self::$_LESS_DIR_OUTPUT_FILES_ = trim($arrayParam['less']['pathOutput']);
                     }
 
+                    if ($arrayParam['less']['compress'] == 1) {
+                        self::$_LESS_COMPRESS_ = true;
+                    } else {
+                        self::$_LESS_COMPRESS_ = false;
+                    }
+
                     if (!$flag) exit;
 
                     self::startLess();
@@ -376,14 +384,14 @@ class Kerl {
 
                 while (true) {
 
-                    if ($i === 40) {
+                    if ($i === 60) {
                         $i = 0;
                         self::parseIni($tip);
                     }
 
                     self::less();
                     flush();
-                    usleep(300000);
+                    usleep(600000);
                     ++$i;
                 }
 
