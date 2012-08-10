@@ -65,6 +65,17 @@ class Kerl {
             }
 
             if ($filesParam[$basename]) {
+
+                $arrayIncludeFiles = glob(mb_substr($val, 0, -5) . '/*\.less');
+
+                foreach ($arrayIncludeFiles as $val2) {
+                    if (filemtime($val) < filemtime($val2)) {
+                        touch($val, time(), time());
+                        clearstatcache();
+                        break;
+                    }
+                }
+
                 if ($filesParam[$basename]['fileInfo']['mtime'] != filemtime($val) || $filesParam[$basename]['outputFile'] !==  $newFileName) {
                     $tmp = system("lessc $val > $newFileName $compress", $status);
                     touch($newFileName, time() + 1, time() + 1);
