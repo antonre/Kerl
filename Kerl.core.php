@@ -19,8 +19,9 @@ class Kerl {
     static $_CSSJOIN_INPUT_FILES_BASE_PATH_ = '/';
     static $_CSSJOIN_OUTPUT_FILES_BASE_PATH_ = '/';
     static $_CSSJOIN_INPUT_FILES_ = array();
-    static $_CSSJOIN_OUTPUT_FILE_DEFAULT_ = '/var/www/server/defauly.css';
     static $_CSSJOIN_INFO_FILE_ = 'infoCssJoin.kerl';
+
+    static private $_MD_KERL_INFO_FILE = null;
 
     /**
      * md5 hash of the file info.kerl
@@ -220,13 +221,16 @@ class Kerl {
                 echo 'File or dir "' . $file . '" not found' . "\n";
                 $flag = false;
             } else if (is_dir($file)) {
-                $arrayFiles = glob($file . '*\.css');
+                $arrayFiles = glob($file . '*');
                 $tmpArray = array();
 
                 foreach ($arrayFiles as $val2) {
-                    $tmpArray[$val2] = $val;
+                    if (!is_dir($val2)) {
+                        $tmpArray[$val2] = $val;
+                    }
                 }
 
+                unset(self::$_CSSJOIN_INPUT_FILES_[$file]);
                 self::$_CSSJOIN_INPUT_FILES_ = array_merge(self::$_CSSJOIN_INPUT_FILES_, $tmpArray);
             }
         }
