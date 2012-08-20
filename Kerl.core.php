@@ -77,8 +77,12 @@ class Kerl {
                 }
 
                 if ($filesParam[$basename]['fileInfo']['mtime'] != filemtime($val) || $filesParam[$basename]['outputFile'] !==  $newFileName) {
+                    $f = fopen ($newFileName . '.lock', "a+");
+                    fclose($f);
+
                     $tmp = system("lessc $val > $newFileName $compress", $status);
-                    touch($newFileName, time() + 1, time() + 1);
+
+                    unlink($newFileName . '.lock');
 
                     if (!empty($tmp) || $status != 1) {
                         echo $tmp."\n";
@@ -167,6 +171,10 @@ class Kerl {
             if (!file_exists($file)) {
                 echo 'File "' . $file . '" not found';
                 exit;
+            }
+
+            if (file_exists($file . '.lock')) {
+                continue;
             }
 
             if ($filesParam[$file] && !in_array($filesParam[$file]['outputFile'], self::$_CSSJOIN_INPUT_FILES_)) {
